@@ -22,13 +22,13 @@ def test_compute_hash():
 def test_get_deck_from_path_root():
     base = Path("/notes")
     file = Path("/notes/test.md")
-    assert get_deck_from_path(file, base) == "default"
+    assert get_deck_from_path(file, base) == "notes"
 
 
 def test_get_deck_from_path_nested():
     base = Path("/notes")
     file = Path("/notes/python/basics/test.md")
-    assert get_deck_from_path(file, base) == "python::basics"
+    assert get_deck_from_path(file, base) == "notes::python::basics"
 
 
 def test_parse_markdown_file(tmp_path: Path):
@@ -51,7 +51,7 @@ print("hello")
 
     assert cards[0].front_raw == "What is Python?"
     assert cards[0].back_raw == "A programming language."
-    assert cards[0].deck == "default"
+    assert cards[0].deck == tmp_path.name
 
     assert cards[1].front_raw == "How do you print?"
     assert "print" in cards[1].back_raw
@@ -82,8 +82,8 @@ def test_parse_all(tmp_path: Path):
 
     assert len(cards) == 2
     decks = {c.deck for c in cards}
-    assert "topic1" in decks
-    assert "topic2" in decks
+    assert f"{tmp_path.name}::topic1" in decks
+    assert f"{tmp_path.name}::topic2" in decks
 
 
 def test_find_duplicate_fronts(tmp_path: Path):

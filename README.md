@@ -51,16 +51,16 @@ print("Hello, World!")
 ​```
 ```
 
-Subdirectories become Anki decks:
+The sync directory becomes the top-level Anki deck. Its subdirectories become nested decks:
 
 ```
 anki/
   deck/
-    basics.md             → "deck" deck
+    basics.md             → "anki::deck" deck
   interview-prep/
     systems/
-      basics.md           → "interview-prep::systems" deck
-  scratch.md              → "default" deck
+      basics.md           → "anki::interview-prep::systems" deck
+  scratch.md              → "anki" deck
 ```
 
 ## Try it out
@@ -71,9 +71,9 @@ The `examples/` directory contains test cards:
 examples/
   programming/
     python/
-      basics.md     → "programming::python" deck
+      basics.md     → "examples::programming::python" deck
   languages/
-    spanish.md      → "languages" deck
+    spanish.md      → "examples::languages" deck
 ```
 
 ```bash

@@ -10,10 +10,9 @@ TEST_DECK = TEST_DECK_PREFIX
 
 
 def make_test_notes(tmp_path: Path) -> tuple[Path, Path]:
-    base = tmp_path / "anki"
-    deck = base / TEST_DECK
-    deck.mkdir(parents=True)
-    return base, deck
+    base = tmp_path / TEST_DECK
+    base.mkdir()
+    return base, base
 
 
 @pytest.fixture
@@ -236,6 +235,7 @@ Answer.
 
     assert TEST_DECK not in client.get_deck_names()
 
+
 def test_sync_matches_by_hash_after_root_rename(
     client, cleanup_test_deck, tmp_path: Path
 ):
@@ -246,14 +246,18 @@ Same answer.
 """)
     sync(base, client, dry_run=False, verbose=False)
 
-    renamed_base = tmp_path / "decks"
+    renamed_deck = f"{TEST_DECK}-renamed"
+    renamed_base = tmp_path / renamed_deck
     base.rename(renamed_base)
     stats = sync(renamed_base, client, dry_run=False, verbose=False)
 
     assert stats.created == 0
     assert stats.updated == 1
-    assert len(client.find_notes(f'"deck:{TEST_DECK}"')) == 1
+    assert stats.moved == 1
+    assert len(client.find_notes(f'"deck:{renamed_deck}"')) == 1
+    assert TEST_DECK not in client.get_deck_names()
 
     stats = sync(renamed_base, client, dry_run=False, verbose=False)
     assert stats.created == 0
     assert stats.updated == 0
+    assert stats.moved == 0

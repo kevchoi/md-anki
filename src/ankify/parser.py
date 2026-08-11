@@ -21,7 +21,8 @@ class MarkdownCard:
 
 def get_deck_from_path(file_path: Path, base_path: Path) -> str:
     relative = file_path.parent.relative_to(base_path)
-    return "::".join(relative.parts) if relative.parts else "default"
+    root = base_path.resolve().name or "default"
+    return "::".join((root, *relative.parts))
 
 
 def parse_markdown_file(file_path: Path, base_path: Path) -> list[MarkdownCard]:

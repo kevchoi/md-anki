@@ -105,6 +105,7 @@ def sync(
         for source_hash, note in existing.items()
         if _belongs_to_path(note, path)
     }
+    moved_from_roots: set[str] = set()
 
     if verbose:
         print(f"Found {len(existing)} existing notes in Anki")
@@ -162,6 +163,7 @@ def sync(
                 if not dry_run and note.card_ids:
                     client.change_deck(note.card_ids, card.deck)
                 stats.moved += 1
+                moved_from_roots.add(note.deck.split("::", 1)[0])
             except Exception as e:
                 stats.errors.append(
                     f"Failed to move '{_preview(card.front_raw)}': {e}"
@@ -189,6 +191,7 @@ def sync(
         root_decks.update(
             note.deck.split("::", 1)[0] for note in existing_for_path.values()
         )
+        root_decks.update(moved_from_roots)
 
         for root_deck in root_decks:
             deleted_decks = client.delete_empty_decks(root_deck)
